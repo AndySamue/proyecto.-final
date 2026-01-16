@@ -39,7 +39,7 @@ function MyTabs() {
       <Tab.Screen
         name="Registrarse"
         component={RegisterSceen}
-        options={{
+        options={{headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Entypo name="login" size={size} color={color} />
           ),
