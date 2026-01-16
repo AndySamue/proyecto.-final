@@ -1,23 +1,85 @@
-import { Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
+import { supabase } from '../supabase/config'
 
 
 export default function RegisterSceen() {
 
+  const [user, setuser] = useState("")
   const [name, setname] = useState("")
   const [age, setage] = useState(0)
-  const [user, setuser] = useState("")
   const [password, setpassword] = useState("")
   const [confirmpass, setconfirmpass] = useState("")
 
 
+  function validarCampos(){
+
+    if(
+      name.trim() === "" || 
+      user.trim() === "" || 
+      password.trim() === "" || 
+      confirmpass.trim() === "")
+      {
+        Alert.alert("Error", "Todos los campos son obligatorios")
+        return false
+      }
+
+    if(age < 5 || isNaN(age))
+      {
+        Alert.alert("Error", "Edad minima 5 años")
+        return false
+      }
+
+    if(password !== confirmpass)
+      {
+        Alert.alert("Error", "Las contraseñas no coinciden")
+        return false
+      }
+
+    if(password.length < 6)
+      {
+        Alert.alert("Error", "La contraseña debe tener al menos 6 caracteres")
+        return false
+
+      } return true
+  }
+
+
+
+  async function guardarRegister(){
+
+    if(!validarCampos()){
+      return
+    }
+
+    const { error } = await supabase
+  .from('register')
+  .insert(
+    { 
+      user: user, 
+      name: name,
+      age: age,
+      password: password,
+      confirmpass: confirmpass
+    }
+  )
+  //console.log(error);
+  if(error){
+    console.log(error);
+    Alert.alert("Error", "No se pudo registrar el usuario")
+  }else{
+    Alert.alert("Éxito", "Usuario registrado correctamente")
+  }
+  }
+
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}> ¡ÚNETE A LA AVENTURA! </Text>
-      <Text style={styles.subtitle}>Crea tu personaje</Text>
+      <Text style={styles.title}> ¡Registrar Usuario! </Text>
+      <Text> </Text>
 
         <View style={styles.formContainer}>
-        <Text style={styles.label}>Nombre del Héroe</Text>
+        <Text style={styles.label}>Nombre</Text>
         <TextInput
         placeholder='Nombre'
         placeholderTextColor={'#1d3557d8'}
@@ -62,8 +124,8 @@ export default function RegisterSceen() {
       />
       </View>
 
-      <TouchableOpacity  style={styles.button} onPress={()=>{}}>
-        <Text style={{ color:'white'}}>🎮 REGISTRAR 🎮</Text>
+      <TouchableOpacity  style={styles.button} onPress={()=>guardarRegister()}>
+        <Text style={{ color:'white'}}> REGISTRAR </Text>
       </TouchableOpacity>
       
 
@@ -94,15 +156,9 @@ const styles = StyleSheet.create({
     textAlign:'center',
     fontWeight:'bold',
     color:'#1d3557',
-    textShadowColor: '#FE7F2D',
+    textShadowColor: '#7399e9',
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 5,
-  },
-  subtitle:{
-    fontSize:16,
-    marginBottom:25,
-    textAlign:'center',
-    color:'#1d3557',
   },
   formContainer:{
     backgroundColor:'#ffffff',
