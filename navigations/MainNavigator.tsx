@@ -4,7 +4,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import RegisterSceen from "../screens/RegisterSceen";
 import LoginScreen from "../screens/LoginScreen";
 import GameScreen from "../screens/GameScreen";
-import { Entypo, FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, Entypo } from '@expo/vector-icons';
+
 
 const Tab = createBottomTabNavigator();
 
@@ -39,7 +40,7 @@ function MyTabs() {
       <Tab.Screen
         name="Registrarse"
         component={RegisterSceen}
-        options={{
+        options={{headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Entypo name="login" size={size} color={color} />
           ),
