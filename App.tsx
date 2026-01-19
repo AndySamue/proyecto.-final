@@ -1,18 +1,15 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import MainNav from './navigations/MainNavigator';
+import { StyleSheet } from "react-native";
+import StackNav from "./navigations/StackNavigator";
 
 export default function App() {
-  return (
-   <MainNav/>
-  );
+  return <StackNav />;
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

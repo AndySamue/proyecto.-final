@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import React from "react";
 
-export default function LoginScreen() {
+export default function LoginScreen({ navigation }: any) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Iniciar Sesión</Text>
@@ -33,10 +33,11 @@ export default function LoginScreen() {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.link}>
-        <Text style={styles.linkText}>
-          ¿No tienes una cuenta? Regístrate
-        </Text>
+      <TouchableOpacity
+        style={styles.link}
+        onPress={() => navigation.navigate("Registrar")}
+      >
+        <Text style={styles.linkText}>¿No tienes una cuenta? Regístrate</Text>
       </TouchableOpacity>
     </View>
   );
@@ -107,6 +108,6 @@ const styles = StyleSheet.create({
 
   linkText: {
     color: "#1E6091",
-    fontSize: 14,
+    fontSize: 15,
   },
 });
