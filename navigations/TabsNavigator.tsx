@@ -1,19 +1,61 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer } from "@react-navigation/native";
-import PerfilScreen from "../screens/PerfilScreen";
+
+import { FontAwesome, Entypo } from "@expo/vector-icons";
 import GameScreen from "../screens/GameScreen";
+import PerfilScreen from "../screens/PerfilScreen";
 import PuntuacionScreen from "../screens/PuntuacionScreen";
 
 const Tab = createBottomTabNavigator();
 
-export default function GameNav() {
+function MyTabs() {
   return (
-    <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen name="Game" component={GameScreen} />
-        <Tab.Screen name="Perfil" component={PerfilScreen} />
-        <Tab.Screen name="Score" component={PuntuacionScreen} />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <Tab.Navigator
+      screenOptions={{
+        tabBarStyle: {
+          backgroundColor: "#233D4D",
+          height: 60,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          position: "absolute",
+        },
+        tabBarActiveTintColor: "#F5FBE6",
+        tabBarInactiveTintColor: "#215E61",
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: "bold",
+        },
+      }}
+    >
+      <Tab.Screen
+        name="Juego"
+        component={GameScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Entypo name="game-controller" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Perfil"
+        component={PerfilScreen}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome name="user" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Puntuación"
+        component={PuntuacionScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Entypo name="game-controller" size={size} color={color} />
+          ),
+        }}
+      />
+    </Tab.Navigator>
   );
 }
+
+export default MyTabs;
