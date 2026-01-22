@@ -2,7 +2,10 @@ import { StyleSheet } from "react-native";
 import StackNav from "./navigations/StackNavigator";
 
 export default function App() {
-  return <StackNav />;
+  return(
+    <StackNav />
+  ) ;
+    
 }
 
 const styles = StyleSheet.create({

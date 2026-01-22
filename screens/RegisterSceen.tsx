@@ -9,8 +9,8 @@ import {
 import React, { useState } from "react";
 import { supabase } from "../supabase/config";
 
-export default function RegisterScreen() {
-  const [user, setUser] = useState("");
+export default function RegisterScreen({ navigation }: any) {
+  const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [age, setAge] = useState(0);
   const [password, setPassword] = useState("");
@@ -19,7 +19,7 @@ export default function RegisterScreen() {
   function validarCampos() {
     if (
       name.trim() === "" ||
-      user.trim() === "" ||
+      email.trim() === "" ||
       password.trim() === "" ||
       confirmPass.trim() === ""
     ) {
@@ -45,10 +45,25 @@ export default function RegisterScreen() {
     return true;
   }
 
+
+  ////FUNCION PARA REGISTRAR
   async function guardarRegister() {
     if (!validarCampos()) return;
 
-    const { error } = await supabase.from("register").insert({
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+    })
+
+    if (data.user != null) {
+      navigation.navigate("Login")
+      guardarUsuario(data.user.id)
+    } else {
+      Alert.alert("Error", error?.message)
+    }
+
+    /*const { error } = await supabase
+      .from("register").insert({
       user: user,
       name: name,
       age: age,
@@ -60,7 +75,19 @@ export default function RegisterScreen() {
       Alert.alert("Error", "No se pudo registrar el usuario");
     } else {
       Alert.alert("Éxito", "Usuario registrado correctamente");
-    }
+    }*/
+  }
+
+  ////FUNCION PARA GUARDAR
+  async function guardarUsuario(uid: String) {
+    const { error } = await supabase
+      .from('usuarios')
+      .insert({
+        uid: uid,
+        name: name,
+        age: age,
+        email: email
+      })
   }
 
   return (
@@ -73,6 +100,7 @@ export default function RegisterScreen() {
           style={styles.input}
           placeholder="Ingresa tu nombre"
           placeholderTextColor="#A0A0A0"
+          autoCapitalize="none"
           onChangeText={setName}
         />
 
@@ -88,9 +116,9 @@ export default function RegisterScreen() {
         <Text style={styles.label}>Usuario</Text>
         <TextInput
           style={styles.input}
-          placeholder="Ingresa tu usuario"
+          placeholder="Ingresa tu correo"
           placeholderTextColor="#A0A0A0"
-          onChangeText={setUser}
+          onChangeText={setEmail}
         />
 
         <Text style={styles.label}>Contraseña</Text>
@@ -111,7 +139,7 @@ export default function RegisterScreen() {
           onChangeText={setConfirmPass}
         />
 
-        <TouchableOpacity style={styles.button} onPress={guardarRegister}>
+        <TouchableOpacity style={styles.button} onPress={() => guardarRegister()}>
           <Text style={styles.buttonText}>Registrarse</Text>
         </TouchableOpacity>
       </View>
