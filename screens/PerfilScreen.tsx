@@ -1,13 +1,45 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { supabase } from "../supabase/config";
 
 export default function PerfilScreen() {
-  const user = {
-    name: "Andy Limaico",
-    age: 19,
-    email: "andy@email.com",
-  };
+
+  const [user, setuser] = useState({} as usuario)
+
+  type usuario={
+    name: String,
+    age: number,
+    email: String
+  }
+
+  useEffect(() => {
+    leerUsuario()
+  }, [])
+
+  ////TRAE LOS DATOS DE INCIO DE SESION
+  async function leerUsuario() {
+    const { data, error } = await supabase.auth.getSession()
+
+    datosUsuarios( data.session?.user.id)
+  }
+
+
+  ////LEER LA INFORMACION DESDE LA TABLA
+  async function datosUsuarios( uid : any) {
+    const { data, error } = await supabase
+      .from('usuarios')
+      .select()
+      .eq('uid', uid)
+
+      console.log(data)
+
+      if(data != null){
+        setuser(data [0])
+      }
+  }
+
+
 
   return (
     <View style={styles.container}>
