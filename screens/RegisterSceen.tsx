@@ -56,7 +56,7 @@ export default function RegisterScreen({ navigation }: any) {
     })
 
     if (data.user != null) {
-      navigation.navigate("Login")
+      navigation.navigate("Iniciar Sesión")
       guardarUsuario(data.user.id)
     } else {
       Alert.alert("Error", error?.message)
@@ -113,7 +113,7 @@ export default function RegisterScreen({ navigation }: any) {
           onChangeText={(t) => setAge(+t)}
         />
 
-        <Text style={styles.label}>Usuario</Text>
+        <Text style={styles.label}>Correo</Text>
         <TextInput
           style={styles.input}
           placeholder="Ingresa tu correo"

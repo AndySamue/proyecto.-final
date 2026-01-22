@@ -21,7 +21,7 @@ export default function LoginScreen({ navigation }: any) {
     })
 
     if( data.session != null){
-      navigation.navigate("Perfil")
+      navigation.replace("Tabs")
     }else{
       console.log(error)
       Alert.alert("Error", error?.message)
