@@ -8,6 +8,8 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { supabase } from "../supabase/config";
+import * as SecureStore from "expo-secure-store";
+import * as LocalAuthentication from "expo-local-authentication";
 
 export default function LoginScreen({ navigation }: any) {
 
@@ -22,11 +24,43 @@ export default function LoginScreen({ navigation }: any) {
 
     if( data.session != null){
       navigation.replace("Tabs")
+      loginExitoso(data.session.access_token);
     }else{
       console.log(error)
       Alert.alert("Error", error?.message)
     }
 
+  }
+
+  // Biometria
+   async function biometria() {
+    const resultadoAuth = await LocalAuthentication.authenticateAsync({
+      promptMessage: "Pon tu huella dactilar",
+      disableDeviceFallback: true
+    });
+
+    if (resultadoAuth.success) {
+      console.log("Login biometrico exitoso");
+      navigation.navigate("Perfil");
+    } else {
+      console.log("Error");
+    }
+  }
+
+  // 1. Verificar si el token esta activo & guardar en una variable local
+  async function loginExitoso(token: any) {
+    await SecureStore.setItemAsync("token", token);
+  }
+
+  // 3. Pedir login biometrico solo si el token es válido
+  async function revisarToken() {
+    const token = await SecureStore.getItemAsync("token");
+
+    if (!token) {
+      return false;
+    }
+
+    biometria();
   }
 
   return (
