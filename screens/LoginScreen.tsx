@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { supabase } from "../supabase/config";
 import * as SecureStore from "expo-secure-store";
 import * as LocalAuthentication from "expo-local-authentication";
@@ -15,6 +15,10 @@ export default function LoginScreen({ navigation }: any) {
 
   const [email, setemail] = useState('');
   const [password, setpassword] = useState('')
+
+  useEffect(() => {
+    revisarToken();
+  }, []);
 
   async function login() {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -41,7 +45,7 @@ export default function LoginScreen({ navigation }: any) {
 
     if (resultadoAuth.success) {
       console.log("Login biometrico exitoso");
-      navigation.navigate("Perfil");
+      navigation.navigate("Tabs");
     } else {
       console.log("Error");
     }
