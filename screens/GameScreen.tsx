@@ -1,8 +1,10 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import * as SecureStore from "expo-secure-store";
+import { supabase } from "../supabase/config";
 
-export default function GameScreen() {
+export default function GameScreen({ navigation }: any) {
   const [puntaje, setPuntaje] = useState(0);
   const [tiempo, setTiempo] = useState(10);
   const [juego, setJuego] = useState(false);
@@ -31,12 +33,14 @@ export default function GameScreen() {
 
   function puntos() {
     if (juego) {
-      setPuntaje(puntaje + 1);
+      setPuntaje((prev) => prev + 1);
     }
   }
 
+
   return (
     <View style={styles.container}>
+      
       <Text style={styles.title}>TapRush</Text>
 
       <View style={styles.card}>
@@ -60,6 +64,7 @@ export default function GameScreen() {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -67,7 +72,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 20,
   },
-
+  logout: {
+    position: "absolute",
+    top: 50,
+    right: 20,
+    zIndex: 10,
+  },
   title: {
     fontSize: 42,
     fontWeight: "bold",
@@ -75,7 +85,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 30,
   },
-
   card: {
     backgroundColor: "#FFFFFF",
     borderRadius: 20,
@@ -89,18 +98,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 80,
   },
-
   icon: {
     marginBottom: 25,
   },
-
   text: {
     fontSize: 16,
     color: "#6C757D",
     marginBottom: 10,
     fontWeight: "500",
   },
-
   tapArea: {
     marginTop: 25,
     backgroundColor: "#22c55e",
@@ -110,13 +116,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
   tapText: {
     color: "#FFFFFF",
     fontSize: 18,
     fontWeight: "bold",
   },
-
   button: {
     backgroundColor: "#233D4D",
     borderRadius: 14,
@@ -126,7 +130,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 20,
   },
-
   buttonText: {
     color: "#FFFFFF",
     fontSize: 16,
