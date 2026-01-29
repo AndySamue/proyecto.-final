@@ -1,13 +1,13 @@
 import { StyleSheet, Text, TouchableOpacity, View, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import * as SecureStore from "expo-secure-store";
-import { supabase } from "../supabase/config";
+import { Audio } from "expo-av";
 
 export default function GameScreen({ navigation }: any) {
   const [puntaje, setPuntaje] = useState(0);
   const [tiempo, setTiempo] = useState(10);
   const [juego, setJuego] = useState(false);
+  const [sound, setSound] = useState<Audio.Sound | null>(null);
 
   useEffect(() => {
     let temporizador: any;
@@ -25,15 +25,33 @@ export default function GameScreen({ navigation }: any) {
     return () => clearInterval(temporizador);
   }, [juego, tiempo]);
 
+   useEffect(() => {
+    return sound
+      ? () => {
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound]);
+
   function iniciar() {
     setPuntaje(0);
     setTiempo(10);
     setJuego(true);
   }
 
-  function puntos() {
+  async function playSound() {
+    const { sound } = await Audio.Sound.createAsync(
+      require("../assets/sounds/click.mp3")
+    );
+    setSound(sound);
+    await sound.playAsync();
+  }
+
+
+  async function puntos() {
     if (juego) {
       setPuntaje((prev) => prev + 1);
+      await playSound();
     }
   }
 
