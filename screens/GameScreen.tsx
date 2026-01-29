@@ -37,27 +37,10 @@ export default function GameScreen({ navigation }: any) {
     }
   }
 
-  async function logout() {
-    Alert.alert("Cerrar sesión", "¿Seguro que deseas salir?", [
-      { text: "Cancelar", style: "cancel" },
-      {
-        text: "Salir",
-        style: "destructive",
-        onPress: async () => {
-          await SecureStore.deleteItemAsync("token");
-          await supabase.auth.signOut();
-          navigation.replace("Iniciar Sesión");
-        },
-      },
-    ]);
-  }
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.logout} onPress={logout}>
-        <Ionicons name="log-out-outline" size={24} color="#D00000" />
-      </TouchableOpacity>
-
+      
       <Text style={styles.title}>TapRush</Text>
 
       <View style={styles.card}>
