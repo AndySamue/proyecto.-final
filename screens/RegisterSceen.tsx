@@ -61,21 +61,6 @@ export default function RegisterScreen({ navigation }: any) {
     } else {
       Alert.alert("Error", error?.message)
     }
-
-    /*const { error } = await supabase
-      .from("register").insert({
-      user: user,
-      name: name,
-      age: age,
-      password: password,
-      confirmpass: confirmPass,
-    });
-
-    if (error) {
-      Alert.alert("Error", "No se pudo registrar el usuario");
-    } else {
-      Alert.alert("Éxito", "Usuario registrado correctamente");
-    }*/
   }
 
   ////FUNCION PARA GUARDAR

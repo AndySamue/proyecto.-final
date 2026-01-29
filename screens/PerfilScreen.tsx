@@ -2,12 +2,13 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { supabase } from "../supabase/config";
+import * as SecureStore from 'expo-secure-store';
 
-export default function PerfilScreen() {
+export default function PerfilScreen({ navigation }: any) {
 
   const [user, setuser] = useState({} as usuario)
 
-  type usuario={
+  type usuario = {
     name: String,
     age: number,
     email: String
@@ -17,29 +18,38 @@ export default function PerfilScreen() {
     leerUsuario()
   }, [])
 
-  ////TRAE LOS DATOS DE INCIO DE SESION
+  ////TRAE LOS DATOS DE INICIO DE SESION
   async function leerUsuario() {
     const { data, error } = await supabase.auth.getSession()
 
-    datosUsuarios( data.session?.user.id)
+    if (data.session?.user.id) {
+      datosUsuarios(data.session.user.id)
+    }
   }
 
 
   ////LEER LA INFORMACION DESDE LA TABLA
-  async function datosUsuarios( uid : any) {
+  async function datosUsuarios(uid: any) {
     const { data, error } = await supabase
       .from('usuarios')
       .select()
       .eq('uid', uid)
 
-      console.log(data)
+    console.log(data)
 
-      if(data != null){
-        setuser(data [0])
-      }
+    if (data != null && data.length > 0) {
+      setuser(data[0])
+    }
   }
 
+  ////CERRAR SESION
+  async function logout() {
+    const { error } = await supabase.auth.signOut()
 
+    await SecureStore.deleteItemAsync('token')
+
+    navigation.navigate("Welcome")
+  }
 
   return (
     <View style={styles.container}>
@@ -68,13 +78,14 @@ export default function PerfilScreen() {
           <Text style={styles.value}>{user.email}</Text>
         </View>
 
-        <TouchableOpacity style={styles.logoutButton}>
+        <TouchableOpacity style={styles.logoutButton} onPress={() => logout()}>
           <Text style={styles.logoutText}>Cerrar sesión</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
