@@ -2,12 +2,20 @@ import { StyleSheet, Text, View, FlatList } from "react-native";
 import React, { useEffect, useState } from "react";
 import { supabase } from "../supabase/config";
 
-export default function PuntuacionScreen() {
+export default function PuntuacionScreen({ navigation }: any) {
   const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
     cargarPuntuaciones();
   }, []);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      cargarPuntuaciones();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   async function cargarPuntuaciones() {
     const { data, error } = await supabase

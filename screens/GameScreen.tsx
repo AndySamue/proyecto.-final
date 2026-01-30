@@ -19,7 +19,7 @@ export default function GameScreen({ navigation }: any) {
       }, 1000);
     }
 
-    if (tiempo === 0) {
+    if (tiempo === 0 && juego) {
       setJuego(false);
       guardarPuntuacion();
     }
