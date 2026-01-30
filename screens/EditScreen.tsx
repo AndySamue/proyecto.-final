@@ -5,10 +5,13 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Image,
+  Button,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { supabase } from "../supabase/config";
+import * as ImagePicker from 'expo-image-picker';
 
 export default function EditScreen({ navigation }: any) {
   const [email, setEmail] = useState("");
@@ -16,6 +19,8 @@ export default function EditScreen({ navigation }: any) {
   const [age, setAge] = useState(5);
   const [password, setPassword] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
+  const [image, setImage] = useState<string | null>(null);
+  const [uid, setUid] = useState("");
 
   useEffect(() => {
     cargarDatos();
@@ -25,6 +30,8 @@ export default function EditScreen({ navigation }: any) {
     const { data } = await supabase.auth.getUser();
 
     if (!data.user) return;
+
+    setUid(data.user.id);
 
     const { data: usuario } = await supabase
       .from("usuarios")
@@ -36,7 +43,88 @@ export default function EditScreen({ navigation }: any) {
       setName(usuario.name);
       setAge(usuario.age);
       setEmail(usuario.email);
+      if (usuario.foto_url) {
+        setImage(usuario.foto_url);
+      }
     }
+  }
+
+  const pickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permissionResult.granted) {
+      Alert.alert('Permission required', 'Permission to access the media library is required.');
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
+  async function subirImagen() {
+  if (!image) {
+    return null;
+  }
+
+  // Si la imagen ya está subida (es una URL), retornarla
+  if (image.startsWith('http')) {
+    return image;
+  }
+
+  try {
+    // Fetch la imagen como blob
+    const response = await fetch(image);
+    const blob = await response.blob();
+    
+    // Convertir blob a ArrayBuffer
+    const arrayBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as ArrayBuffer);
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(blob);
+    });
+
+    const { data, error } = await supabase
+      .storage
+      .from('fotos-perfil')
+      .upload(`usuarios/${uid}.png`, arrayBuffer, {
+        contentType: 'image/png',
+        upsert: true
+      });
+
+    console.log(data);
+    console.log(error);
+
+    if (error) {
+      console.log("Error subiendo imagen:", error);
+      return null;
+    }
+
+    return traerURL();
+  } catch (error) {
+    console.log("Error en subirImagen:", error);
+    return null;
+  }
+}
+
+  function traerURL() {
+    const { data } = supabase
+      .storage
+      .from('fotos-perfil')
+      .getPublicUrl(`usuarios/${uid}.png`);
+
+    console.log(data.publicUrl);
+    return data.publicUrl;
   }
 
   function validarCampos() {
@@ -77,12 +165,19 @@ export default function EditScreen({ navigation }: any) {
 
     const uid = data.user.id;
 
+    // Subir imagen si hay una nueva
+    let fotoUrl = image;
+    if (image && !image.startsWith('http')) {
+      fotoUrl = await subirImagen();
+    }
+
     const { error } = await supabase
       .from("usuarios")
       .update({
         name: name,
         age: age,
         email: email,
+        foto_url: fotoUrl
       })
       .eq("uid", uid);
 
@@ -103,7 +198,7 @@ export default function EditScreen({ navigation }: any) {
     }
 
     Alert.alert("Éxito", "Perfil actualizado correctamente");
-    navigation.goBack();
+    navigation.navigate("Tabs", { screen: "Perfil" });
   }
 
   return (
@@ -117,6 +212,13 @@ export default function EditScreen({ navigation }: any) {
           color="#233D4D"
           style={styles.icon}
         />
+
+        <Button title="Seleccionar Foto" onPress={pickImage} />
+        {image &&
+          <View style={styles.imagePreview}>
+            <Image source={{ uri: image }} style={styles.image} />
+          </View>
+        }
 
         <TextInput
           style={styles.input}
@@ -194,6 +296,18 @@ const styles = StyleSheet.create({
   icon: {
     alignSelf: "center",
     marginBottom: 25,
+  },
+
+  imagePreview: {
+    alignItems: 'center',
+    marginVertical: 15,
+  },
+
+  image: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    resizeMode: 'cover'
   },
 
   input: {

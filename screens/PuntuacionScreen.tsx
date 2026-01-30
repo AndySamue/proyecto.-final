@@ -1,12 +1,27 @@
 import { StyleSheet, Text, View, FlatList } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { supabase } from "../supabase/config";
 
 export default function PuntuacionScreen() {
-  const data = [
-    { id: "1", nombre: "Usuario 1", puntos: 25 },
-    { id: "2", nombre: "Usuario 2", puntos: 18 },
-    { id: "3", nombre: "Usuario 3", puntos: 12 },
-  ];
+  const [data, setData] = useState<any[]>([]);
+
+  useEffect(() => {
+    cargarPuntuaciones();
+  }, []);
+
+  async function cargarPuntuaciones() {
+    const { data, error } = await supabase
+      .from('puntuaciones')
+      .select('*')
+      .order('puntos', { ascending: false })
+      .limit(10);
+
+    if (error) {
+      console.log("Error cargando puntuaciones:", error);
+    } else {
+      setData(data || []);
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -20,7 +35,7 @@ export default function PuntuacionScreen() {
 
         <FlatList
           data={data}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()}
           renderItem={({ item, index }) => (
             <View style={styles.row}>
               <Text style={styles.user}>

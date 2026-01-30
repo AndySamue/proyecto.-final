@@ -2,6 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Audio } from "expo-av";
+import { supabase } from "../supabase/config";
 
 export default function GameScreen({ navigation }: any) {
   const [puntaje, setPuntaje] = useState(0);
@@ -20,6 +21,7 @@ export default function GameScreen({ navigation }: any) {
 
     if (tiempo === 0) {
       setJuego(false);
+      guardarPuntuacion();
     }
 
     return () => clearInterval(temporizador);
@@ -47,7 +49,6 @@ export default function GameScreen({ navigation }: any) {
     await sound.playAsync();
   }
 
-
   async function puntos() {
     if (juego) {
       setPuntaje((prev) => prev + 1);
@@ -55,6 +56,39 @@ export default function GameScreen({ navigation }: any) {
     }
   }
 
+  async function guardarPuntuacion() {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError || !sessionData.session?.user.id) {
+      console.log("Error obteniendo sesión");
+      return;
+    }
+
+    const { data: userData, error: userError } = await supabase
+      .from('usuarios')
+      .select('name')
+      .eq('uid', sessionData.session.user.id)
+      .single();
+
+    if (userError || !userData) {
+      console.log("Error obteniendo usuario");
+      return;
+    }
+
+    const { error } = await supabase
+      .from('puntuaciones')
+      .insert({
+        uid: sessionData.session.user.id,
+        nombre: userData.name,
+        puntos: puntaje
+      });
+
+    if (error) {
+      console.log("Error guardando puntuación:", error);
+    } else {
+      console.log("Puntuación guardada exitosamente");
+    }
+  }
 
   return (
     <View style={styles.container}>
