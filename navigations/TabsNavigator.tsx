@@ -11,6 +11,7 @@ function MyTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
+        headerShown: false,
         tabBarStyle: {
           backgroundColor: "#233D4D",
           height: 60,
@@ -50,7 +51,7 @@ function MyTabs() {
         component={PuntuacionScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Entypo name="game-controller" size={size} color={color} />
+            <FontAwesome name="trophy" size={size} color={color} />
           ),
         }}
       />

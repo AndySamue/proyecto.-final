@@ -4,6 +4,7 @@ import RegisterSceen from "../screens/RegisterSceen";
 import { NavigationContainer } from "@react-navigation/native";
 import WelcomeScreen from "../screens/WelcomeScreen";
 import MyTabs from "./TabsNavigator";
+import EditScreen from "../screens/EditScreen";
 
 const Stack = createStackNavigator();
 
@@ -14,6 +15,7 @@ function MyStack() {
       <Stack.Screen name="Iniciar Sesión" component={LoginScreen} />
       <Stack.Screen name="Registrar" component={RegisterSceen} />
       <Stack.Screen name="Tabs" component={MyTabs}></Stack.Screen>
+      <Stack.Screen name="Editar" component={EditScreen} />
     </Stack.Navigator>
   );
 }
